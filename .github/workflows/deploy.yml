@@ -1,0 +1,37 @@
+#
+# GitHub Action Workflow
+#   reference: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
+#
+#   useful example: https://github.com/mikeal/bundle-size-action/blob/master/.github/workflows/mikeals-workflow.yml
+#
+
+name: Deploy
+
+run-name: ${{ format('Deploy {0}', inputs.environment) }}
+
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#on
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: The environment to deploy
+        required: true
+        type: choice
+        options:
+          - production
+      dry-run:
+        description: Don't actually deploy (--dry-run)
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  deploy:
+    name: Deploy
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+    with:
+      deployment: true
+      dry-run: ${{ inputs.dry-run }}
+      environment: ${{ inputs.environment }}
+    concurrency: ${{ inputs.environment }}

@@ -1,0 +1,13 @@
+{
+	"preset": "ts-jest",
+	"testEnvironment": "node",
+	"testMatch": ["<rootDir>/test/**/*.spec.[jt]s"],
+	"transform": {
+		"^.+\\.*.spec\\.[jt]s$": [
+			"ts-jest",
+			{
+				"tsconfig": "./test/tsconfig.json"
+			}
+		]
+	}
+}

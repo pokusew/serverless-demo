@@ -1,0 +1,52 @@
+# Cloudflare Workers configuration (Wrangler CLI)
+# docs: https://developers.cloudflare.com/workers/wrangler/configuration/
+
+name = "serverless-demo"
+
+# The default entrypoint.
+# Each environment (deployment) is customized by setting the CONFIG_NAME define.
+main = "src/index.ts"
+
+# see https://developers.cloudflare.com/workers/configuration/compatibility-dates/#compatibility-dates
+compatibility_date = "2024-01-17"
+
+# Custom Domains and Routes
+# https://developers.cloudflare.com/workers/configuration/routing/
+# For our use case, we don't want (or need) the *.workers.dev domain to be enabled.
+# Also, *.workers.dev deployments do not support Cache API,
+# see https://developers.cloudflare.com/workers/runtime-apis/cache/
+# and https://developers.cloudflare.com/r2/examples/cache-api/.
+workers_dev = true
+# We want to use a Custom Domain (Worker Routes could be used as well).
+# routes = [
+# 	# https://developers.cloudflare.com/workers/configuration/routing/custom-domains
+# 	{ pattern = "swa-demo.pokusew.cz", custom_domain = true }
+# ]
+
+# This allows dead-code-elimination and tree-shaking during build.
+# By default, Wrangler uses esbuild under the hood for building the sources.
+#
+# Also, it is needed to trigger esbuild transformation of dynamic import during development.
+# Wrangler cannot resolve dynamic import if it is really dynamic (that makes sense)
+# or constructed during build time (but that shoud work).
+minify = true
+
+kv_namespaces = [
+	{ binding = "CACHE", id = "711b93d85f1a4fbf9694cd99f6936448" }
+]
+
+logpush = true
+
+# Variables (vars) are passed by Cloudflare Workers runtime to the fetch handler (during runtime).
+# Their values can be only strings.
+# By their definition, they cannot be used/accessed outside the fetch context.
+# [vars]
+
+# The global identifiers (defines) in the code that are substituted with a value during build.
+# This allows dead-code-elimination and tree-shaking.
+# Their value is a raw TypeScript code so the strings must be explicitly quoted.
+# This allows passing complex statements.
+# Their name can also be more complex identifier (but then it must be quoted so that is it valid TOML).
+[define]
+# MODE (required) - either production or development
+MODE = "'production'"
